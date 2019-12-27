@@ -7,3 +7,14 @@
 //
 
 import Foundation
+
+final class viewmodel_List {
+    let list = ["sota", "akane"]
+    func check() -> [String] {
+        return list
+    }
+    
+    func count() -> Int {
+        return list.count
+    }
+}
