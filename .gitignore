@@ -1,0 +1,9 @@
+starbrowser.xcodeproj
+starbrowser/Assets.xcassets/
+starbrowser/Base.lproj/
+starbrowser/Info.plist
+starbrowser/Assets.xcassets/AppIcon.appiconset/Contents.json
+starbrowser/Assets.xcassets/Contents.json
+starbrowser/Base.lproj/LaunchScreen.storyboard
+starbrowser/Base.lproj/Main.storyboard
+starbrowser/Info.plist

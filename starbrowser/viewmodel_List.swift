@@ -10,8 +10,13 @@ import Foundation
 
 final class viewmodel_List {
     let list = ["sota", "akane"]
-    func check() -> [String] {
+    
+    func alllist() -> [String] {
         return list
+    }
+    
+    func pickuplist(index: Int) -> String {
+        return list[index]
     }
     
     func count() -> Int {
