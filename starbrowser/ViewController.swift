@@ -77,6 +77,7 @@ final class ViewController: UIViewController {
     private func webappear(_ word: String) {
         let webview = BrowserView()
         webview.word = word
+        webview.modalPresentationStyle = .fullScreen
         present(webview, animated: true, completion: nil)
     }
     
