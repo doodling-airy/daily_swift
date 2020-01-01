@@ -76,4 +76,14 @@ class SearchList: Object {
             realm.delete(search)
         }
     }
+    
+    func moveList(search: Search, fromat: Int, toat: Int) {
+        let realm = try! Realm()
+        let result = realm.objects(SearchList.self).last!
+        let tmp = search
+        try! realm.write {
+            result.list.remove(at: fromat)
+            result.list.insert(tmp, at: toat)
+        }
+    }
 }

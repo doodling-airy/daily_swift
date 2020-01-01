@@ -31,6 +31,12 @@ final class ViewController: UIViewController {
         
         let rightBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tap(_:)))
         self.navigationItem.rightBarButtonItem = rightBtn
+        let leftBtn = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editenable(_:)))
+        self.navigationItem.leftBarButtonItem = leftBtn
+    }
+    
+    @objc func editenable(_ sender: UIBarButtonItem) {
+        table.isEditing = !table.isEditing
     }
     
     @objc func tap(_ sender: UIBarButtonItem) {
@@ -92,6 +98,9 @@ extension ViewController: UITableViewDelegate {
             vmList.delete(at: vmList.pickup(index: indexPath.row))
             tableView.deleteRows(at: [indexPath as IndexPath], with: UITableView.RowAnimation.automatic)
         }
+    }
+    func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        vmList.move(search: vmList.pickup(index: sourceIndexPath.row), from: sourceIndexPath.row, to: destinationIndexPath.row)
     }
 }
 

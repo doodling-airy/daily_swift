@@ -37,4 +37,8 @@ final class viewmodel_List {
     func delete(at: Search) {
         SearchListModel.deleteList(search: at)
     }
+    
+    func move(search: Search, from: Int, to: Int) {
+        SearchListModel.moveList(search: search, fromat: from, toat: to)
+    }
 }
