@@ -7,19 +7,34 @@
 //
 
 import Foundation
+import RealmSwift
 
 final class viewmodel_List {
-    let list = ["sota", "akane"]
+//    let list = ["sota", "akane"]
+    let SearchListModel = SearchList()
     
-    func alllist() -> [String] {
-        return list
+    
+    func all() -> List<Search> {
+        return SearchListModel.allList()
     }
     
-    func pickuplist(index: Int) -> String {
-        return list[index]
+    func pickupword(index: Int) -> String {
+        return SearchListModel.pickupListword(index)
+    }
+    
+    func pickup(index: Int) -> Search {
+        return SearchListModel.pickupList(index)
     }
     
     func count() -> Int {
-        return list.count
+        return SearchListModel.countList()
+    }
+    
+    func save(new: Search) {
+        SearchListModel.appendToList(newSearch: new)
+    }
+    
+    func delete(at: Search) {
+        SearchListModel.deleteList(search: at)
     }
 }

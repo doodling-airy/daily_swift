@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RealmSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -25,6 +26,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: scene as! UIWindowScene)
         window?.rootViewController = naviVC
         window?.makeKeyAndVisible()
+        
+        
+        let realm = try! Realm()
+        if realm.objects(SearchList.self).last == nil {
+            print("isthorue")
+            let list = SearchList()
+            try! realm.write {
+                realm.add(list)
+            }
+        }
+        
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -32,6 +44,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This occurs shortly after the scene enters the background, or when its session is discarded.
         // Release any resources associated with this scene that can be re-created the next time the scene connects.
         // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
+        let realm = try! Realm()
+        let search = realm.objects(Search.self)
+        let searchlist = realm.objects(SearchList.self).last!
+        if search.count != searchlist.list.count {
+            for i in searchlist.list {
+                var dupli = false
+                for j in search {
+                    if i.uuid == j.uuid {
+                        dupli = true
+                    }
+                    if dupli {
+                        try! realm.write {
+                            realm.delete(i)
+                        }
+                    }
+                }
+                
+            }
+        }
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {

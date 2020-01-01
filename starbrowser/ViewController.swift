@@ -17,6 +17,7 @@ final class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "検索リスト"
         
         //declare detail of tableview
         table = {
@@ -27,7 +28,37 @@ final class ViewController: UIViewController {
             return tb
         }()
         self.view.addSubview(table)
+        
+        let rightBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tap(_:)))
+        self.navigationItem.rightBarButtonItem = rightBtn
+    }
     
+    @objc func tap(_ sender: UIBarButtonItem) {
+        let alert = UIAlertController(title: "searchword", message: "お気に入りにしたい検索ワード", preferredStyle: .alert)
+        let defaultAction: UIAlertAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler:{ (action: UIAlertAction!) -> Void in
+                print("OK")
+
+            guard let textFields = alert.textFields, !textFields.isEmpty else { return }
+            
+            let newseach = Search()
+            newseach.word = textFields[0].text!
+            self.vmList.save(new: newseach)
+            self.table.reloadData()
+            
+        })
+        // キャンセルボタン
+        let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: UIAlertAction.Style.cancel, handler:{ (action: UIAlertAction!) -> Void in
+                print("Cancel")
+        })
+        
+        alert.addTextField(configurationHandler: {(text: UITextField!) -> Void  in
+            text.tag = 3
+        })
+        
+        alert.addAction(cancelAction)
+        alert.addAction(defaultAction)
+
+        present(alert, animated: true, completion: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,6 +81,18 @@ extension ViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
         webappear((tableView.cellForRow(at: indexPath)?.textLabel!.text)!)
     }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
+    {
+        return true
+    }
+    //スワイプしたセルを削除　※arrayNameは変数名に変更してください
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == UITableViewCell.EditingStyle.delete {
+            vmList.delete(at: vmList.pickup(index: indexPath.row))
+            tableView.deleteRows(at: [indexPath as IndexPath], with: UITableView.RowAnimation.automatic)
+        }
+    }
 }
 
 extension ViewController: UITableViewDataSource {
@@ -59,7 +102,7 @@ extension ViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell")
-        cell?.textLabel!.text = vmList.pickuplist(index: indexPath.row)
+        cell?.textLabel!.text = vmList.pickupword(index: indexPath.row)
         return cell!
     }
     
