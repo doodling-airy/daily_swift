@@ -23,11 +23,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let initview = ViewController()
         let naviVC = UINavigationController(rootViewController: initview)
+//        naviVC.navigationBar.barPosition = UIBarPosition(rawValue: 3)!
+        
         window = UIWindow(windowScene: scene as! UIWindowScene)
         window?.rootViewController = naviVC
         window?.makeKeyAndVisible()
         
-        
+
 //        let realm = try! Realm()
 //        if realm.objects(SearchList.self).last == nil {
 //            let list = SearchList()
