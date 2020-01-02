@@ -22,10 +22,6 @@ final class viewmodel_List {
         return SearchListModel.pickupListword(index)
     }
     
-    func pickup(index: Int) -> Search {
-        return SearchListModel.pickupList(index)
-    }
-    
     func count() -> Int {
         return SearchListModel.countList()
     }
@@ -38,7 +34,13 @@ final class viewmodel_List {
         SearchListModel.deleteList(search: at)
     }
     
-    func move(search: Search, from: Int, to: Int) {
-        SearchListModel.moveList(search: search, fromat: from, toat: to)
+    func move(from: Int, to: Int) {
+        if let pickup = self.pickup(index: from) {
+            SearchListModel.moveList(search: pickup, fromat: from, toat: to)
+        }
+    }
+    
+    func pickup(index: Int) -> Search? {
+        return SearchListModel.pickupList(index)
     }
 }

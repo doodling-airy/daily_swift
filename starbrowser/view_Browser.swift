@@ -16,14 +16,16 @@ protocol BrowserProtocol {
 class BrowserView: UIViewController {
     
     var word: String?
+    var wk: WKWebView!
     
     override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let wk = WKWebView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+        wk = WKWebView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
             
         let url = URLRequest(url: fetchurl())
         wk.load(url)
-            
+        
         self.view.addSubview(wk)
     }
     

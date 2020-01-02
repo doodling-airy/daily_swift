@@ -96,12 +96,15 @@ extension ViewController: UITableViewDelegate {
     //スワイプしたセルを削除　※arrayNameは変数名に変更してください
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == UITableViewCell.EditingStyle.delete {
-            vmList.delete(at: vmList.pickup(index: indexPath.row))
-            tableView.deleteRows(at: [indexPath as IndexPath], with: UITableView.RowAnimation.automatic)
+            if let pickup = self.vmList.pickup(index: indexPath.row) {
+                vmList.delete(at: pickup)
+                tableView.deleteRows(at: [indexPath as IndexPath], with: UITableView.RowAnimation.automatic)
+            }
         }
     }
+    
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        vmList.move(search: vmList.pickup(index: sourceIndexPath.row), from: sourceIndexPath.row, to: destinationIndexPath.row)
+        vmList.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
     }
 }
 

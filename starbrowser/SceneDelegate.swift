@@ -28,14 +28,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
         
         
-        let realm = try! Realm()
-        if realm.objects(SearchList.self).last == nil {
-            print("isthorue")
-            let list = SearchList()
-            try! realm.write {
-                realm.add(list)
-            }
-        }
+//        let realm = try! Realm()
+//        if realm.objects(SearchList.self).last == nil {
+//            let list = SearchList()
+//            try! realm.write {
+//                realm.add(list)
+//            }
+//        }
         
     }
 

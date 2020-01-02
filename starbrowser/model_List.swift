@@ -26,10 +26,17 @@ class SearchList: Object {
         guard self.save(newSearch) else { return }
         
         let realm = try! Realm()
-        let result = realm.objects(SearchList.self).last
-        
-        try! realm.write {
-            result!.list.append(newSearch)
+        if let result = realm.objects(SearchList.self).last {
+            try! realm.write {
+                result.list.append(newSearch)
+            }
+        } else {
+            try! realm.write {
+                realm.add(SearchList())
+                let result = realm.objects(SearchList.self).last
+                result.map{$0.list.append(newSearch)}
+            }
+            print("aaa")
         }
     }
     private func save(_ newSearch: Search) -> Bool{
@@ -45,21 +52,28 @@ class SearchList: Object {
     
     func allList() -> List<Search> {
         let realm = try! Realm()
-        let result = realm.objects(SearchList.self).last!
+        if let result = realm.objects(SearchList.self).last {
+            print("this")
+            return result.list
+        }
         
-        return result.list
+        try! realm.write {
+            realm.add(SearchList())
+        }
+        print("throught")
+        return realm.objects(SearchList.self).last!.list
     }
     
     func pickupListword(_ index: Int) -> String {
         let realm = try! Realm()
-        let result = realm.objects(SearchList.self).last!
-        return result.list[index].word
+        let result = realm.objects(SearchList.self).last
+        return result?.list[index].word ?? ""
     }
     
-    func pickupList(_ index: Int) -> Search {
+    func pickupList(_ index: Int) -> Search? {
         let realm = try! Realm()
-        let result = realm.objects(SearchList.self).last!
-        return result.list[index]
+        let result = realm.objects(SearchList.self).last
+        return result?.list[index]
     }
     
     func countList() -> Int {
