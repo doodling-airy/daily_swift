@@ -18,10 +18,11 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "検索リスト"
+        self.view.backgroundColor = .white
         
         //declare detail of tableview
         table = {
-           let tb = UITableView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
+           let tb = UITableView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 60))
             tb.delegate = self
             tb.dataSource = self
             tb.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -29,10 +30,42 @@ final class ViewController: UIViewController {
         }()
         self.view.addSubview(table)
         
-        let rightBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tap(_:)))
+        let containAddSearch = UIView()
+        containAddSearch.backgroundColor = .white
+        containAddSearch.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(containAddSearch)
+        containAddSearch.topAnchor.constraint(equalTo: self.table.bottomAnchor).isActive = true
+        containAddSearch.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+        containAddSearch.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
+        containAddSearch.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        
+        
+        let addSearchField = AddSearchTextField()
+        addSearchField.layer.borderWidth = 0.2
+        addSearchField.layer.borderColor = UIColor.black.cgColor
+        addSearchField.layer.cornerRadius = 23
+        addSearchField.layer.backgroundColor = UIColor(red: 244/255, green: 244/255, blue: 244/255, alpha: 1).cgColor
+        addSearchField.translatesAutoresizingMaskIntoConstraints = false
+        containAddSearch.addSubview(addSearchField)
+        addSearchField.topAnchor.constraint(equalTo: containAddSearch.topAnchor, constant: 7).isActive = true
+        addSearchField.leadingAnchor.constraint(equalTo: containAddSearch.leadingAnchor, constant: 15).isActive = true
+        addSearchField.widthAnchor.constraint(equalTo: containAddSearch.widthAnchor, constant: -70).isActive = true
+        addSearchField.bottomAnchor.constraint(equalTo: containAddSearch.bottomAnchor, constant: -7).isActive = true
+
+        let addSearchBtn = UIButton(type: .close)
+        addSearchBtn.translatesAutoresizingMaskIntoConstraints = false
+        addSearchBtn.addTarget(self, action: #selector(tap(_:)), for: .touchUpInside)
+        containAddSearch.addSubview(addSearchBtn)
+        addSearchBtn.topAnchor.constraint(equalTo: containAddSearch.topAnchor, constant: 5).isActive = true
+        addSearchBtn.bottomAnchor.constraint(equalTo: containAddSearch.bottomAnchor, constant: -5).isActive = true
+        addSearchBtn.leadingAnchor.constraint(equalTo: addSearchField.trailingAnchor, constant: 5).isActive = true
+        addSearchBtn.trailingAnchor.constraint(equalTo: containAddSearch.trailingAnchor, constant: -5).isActive = true
+        addSearchBtn.transform = CGAffineTransform(rotationAngle: CGFloat(Double.pi/4))
+        
+        let rightBtn = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editenable(_:)))
         self.navigationItem.rightBarButtonItem = rightBtn
-        let leftBtn = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editenable(_:)))
-        self.navigationItem.leftBarButtonItem = leftBtn
+        //let leftBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tap(_:)))
+        //self.navigationItem.leftBarButtonItem = leftBtn
     }
     
     @objc func editenable(_ sender: UIBarButtonItem) {
