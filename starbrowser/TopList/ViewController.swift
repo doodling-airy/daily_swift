@@ -10,10 +10,11 @@ import UIKit
 
 final class ViewController: UIViewController {
     
-    
-    
     private var table: UITableView!
     let vmList = viewmodel_List()
+    var containbottom: NSLayoutConstraint!
+    var addSearchField: AddSearchTextField!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,7 +23,7 @@ final class ViewController: UIViewController {
         
         //declare detail of tableview
         table = {
-           let tb = UITableView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 60))
+            let tb = UITableView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - UIScreen.main.bounds.height*1/10))
             tb.delegate = self
             tb.dataSource = self
             tb.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -37,15 +38,18 @@ final class ViewController: UIViewController {
         containAddSearch.topAnchor.constraint(equalTo: self.table.bottomAnchor).isActive = true
         containAddSearch.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
         containAddSearch.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
-        containAddSearch.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        containAddSearch.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.1).isActive = true
+        //containbottom = containAddSearch.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+        //containbottom.isActive = true
         
         
-        let addSearchField = AddSearchTextField()
+        addSearchField = AddSearchTextField()
         addSearchField.layer.borderWidth = 0.2
         addSearchField.layer.borderColor = UIColor.black.cgColor
         addSearchField.layer.cornerRadius = 23
         addSearchField.layer.backgroundColor = UIColor(red: 244/255, green: 244/255, blue: 244/255, alpha: 1).cgColor
         addSearchField.translatesAutoresizingMaskIntoConstraints = false
+        addSearchField.delegate = self
         containAddSearch.addSubview(addSearchField)
         addSearchField.topAnchor.constraint(equalTo: containAddSearch.topAnchor, constant: 7).isActive = true
         addSearchField.leadingAnchor.constraint(equalTo: containAddSearch.leadingAnchor, constant: 15).isActive = true
@@ -68,44 +72,71 @@ final class ViewController: UIViewController {
         //self.navigationItem.leftBarButtonItem = leftBtn
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        table.reloadData()
+        self.configureObserver()
+    }
+    
+    
+    func configureObserver() {
+          
+      let notification = NotificationCenter.default
+
+      notification.addObserver(
+        self,
+        selector: #selector(self.keyboardWillShow(notification:)),
+        name: UIResponder.keyboardWillShowNotification,
+        object: nil
+      )
+          
+      notification.addObserver(
+        self,
+        selector: #selector(self.keyboardWillHide(notification:)),
+        name: UIResponder.keyboardWillHideNotification,
+        object: nil
+      )
+    }
+    
+    func removeObserver() {
+      NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc func keyboardWillShow(notification: Notification?) {
+        let rect = (notification?.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        let duration: TimeInterval? = notification?.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        print("prepre \((self.navigationController?.navigationBar.frame.height)!)")
+        UIView.animate(withDuration: duration!) {
+            self.table.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - (rect?.size.height)! - (self.navigationController?.navigationBar.frame.height)! - 20)
+            print("preaf \((self.navigationController?.navigationBar.frame.height)!)")
+        }
+      }
+    @objc func keyboardWillHide(notification: Notification?) {
+        let duration: TimeInterval? = notification?.userInfo?[UIResponder.keyboardAnimationCurveUserInfoKey] as? Double
+        print("afpre \((self.navigationController?.navigationBar.frame.height)!)")
+        UIView.animate(withDuration: duration!) {
+            self.table.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - (self.navigationController?.navigationBar.frame.height)! - 16)
+            print("afaf \((self.navigationController?.navigationBar.frame.height)!)")
+        }
+    }
+    
     @objc func editenable(_ sender: UIBarButtonItem) {
         table.isEditing = !table.isEditing
     }
     
     @objc func tap(_ sender: UIBarButtonItem) {
-        let alert = UIAlertController(title: "searchword", message: "お気に入りにしたい検索ワード", preferredStyle: .alert)
-        let defaultAction: UIAlertAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler:{ (action: UIAlertAction!) -> Void in
-                print("OK")
-
-            guard let textFields = alert.textFields, !textFields.isEmpty else { return }
-            
-            let newseach = Search()
-            newseach.word = textFields[0].text!
-            self.vmList.save(new: newseach)
+        if let newword = self.addSearchField!.text {
+            guard !newword.isEmpty else { return }
+            let newsearch = Search()
+            newsearch.word = newword
+            self.vmList.save(new: newsearch)
             self.table.reloadData()
             
-        })
-        // キャンセルボタン
-        let cancelAction: UIAlertAction = UIAlertAction(title: "キャンセル", style: UIAlertAction.Style.cancel, handler:{ (action: UIAlertAction!) -> Void in
-                print("Cancel")
-        })
-        
-        alert.addTextField(configurationHandler: {(text: UITextField!) -> Void  in
-            text.tag = 3
-        })
-        
-        alert.addAction(cancelAction)
-        alert.addAction(defaultAction)
-
-        present(alert, animated: true, completion: nil)
+            self.addSearchField!.text = ""
+            self.addSearchField.resignFirstResponder()
+        }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        //when return here from other VC, refresh tableview
-        table.reloadData()
-    }
     
     private func webappear(_ word: String) {
         let browser = BrowserView()
@@ -156,4 +187,13 @@ extension ViewController: UITableViewDataSource {
         return cell!
     }
     
+}
+
+extension ViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        print("Return")
+        textField.resignFirstResponder()
+        
+        return true
+    }
 }
