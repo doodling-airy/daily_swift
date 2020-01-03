@@ -67,21 +67,42 @@ class BrowserView: UIViewController {
         homeBtn.trailingAnchor.constraint(equalTo: self.topbar.trailingAnchor).isActive = true
         homeBtn.widthAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
         
+        let addfavoBtn = UIButton(type: .contactAdd)
+        addfavoBtn.backgroundColor = .clear
+        addfavoBtn.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        addfavoBtn.addTarget(self, action: #selector(dismissself(_:)), for: .touchUpInside)
+        addfavoBtn.tintColor = .blue
+        addfavoBtn.translatesAutoresizingMaskIntoConstraints = false //to use constraint
+        topbar.addSubview(addfavoBtn)
         
+        addfavoBtn.topAnchor.constraint(equalTo: self.topbar.topAnchor, constant: 20).isActive = true
+        addfavoBtn.heightAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
+        addfavoBtn.leadingAnchor.constraint(equalTo: self.topbar.leadingAnchor).isActive = true
+        addfavoBtn.widthAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
         
-        let addBtn = UIButton(type: .contactAdd)
-        addBtn.backgroundColor = .clear
-        addBtn.titleLabel?.font = UIFont.systemFont(ofSize: 30)
-        addBtn.addTarget(self, action: #selector(dismissself(_:)), for: .touchUpInside)
-        addBtn.tintColor = .blue
-        addBtn.translatesAutoresizingMaskIntoConstraints = false //to use constraint
-        topbar.addSubview(addBtn)
+        let tabtitle = UITextView()
+        tabtitle.backgroundColor = .clear
+        //tabtitle.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        //tabtitle.addTarget(self, action: #selector(dismissself(_:)), for: .touchUpInside)
+        tabtitle.isEditable = false
+        tabtitle.text = vmBrowser.word
+        tabtitle.tintColor = .blue
+        tabtitle.translatesAutoresizingMaskIntoConstraints = false //to use constraint
+        let movetotabview = UITapGestureRecognizer(target: self, action: #selector(movetab(_:)))
+        tabtitle.addGestureRecognizer(movetotabview)
+        topbar.addSubview(tabtitle)
         
-        addBtn.topAnchor.constraint(equalTo: self.topbar.topAnchor, constant: 20).isActive = true
-        addBtn.heightAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
-        addBtn.leadingAnchor.constraint(equalTo: self.topbar.leadingAnchor).isActive = true
-        addBtn.widthAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
+        tabtitle.topAnchor.constraint(equalTo: self.topbar.topAnchor, constant: 20).isActive = true
+        tabtitle.heightAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
+        tabtitle.leadingAnchor.constraint(equalTo: addfavoBtn.trailingAnchor).isActive = true
+        tabtitle.trailingAnchor.constraint(equalTo: homeBtn.leadingAnchor).isActive = true
         
+    }
+    
+    @objc func movetab(_ sender: UITapGestureRecognizer) {
+        let tabview = TabcollectionPager()
+        tabview.modalPresentationStyle = .fullScreen
+        present(tabview, animated: false)
     }
 
     @objc func dismissself(_ sender: UIButton) {
