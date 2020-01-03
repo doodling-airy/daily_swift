@@ -75,10 +75,14 @@ final class ViewController: UIViewController {
     }
     
     private func webappear(_ word: String) {
-        let webview = BrowserView()
-        webview.word = word
-        webview.modalPresentationStyle = .fullScreen
-        present(webview, animated: true, completion: nil)
+        let browser = BrowserView()
+        browser.vmBrowser.word = word
+        browser.modalPresentationStyle = .fullScreen
+        present(browser, animated: true, completion: nil)
+//        navigationController?.pushViewController(browser, animated: true)
+//        let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+//        navigationItem.backBarButtonItem = backButtonItem
+//        navigationController?.interactivePopGestureRecognizer!.isEnabled = false
     }
     
 }
