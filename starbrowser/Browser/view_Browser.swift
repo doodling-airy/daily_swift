@@ -14,34 +14,82 @@ class BrowserView: UIViewController {
     
     
     var wkview: WKWebView!
+    var topbar: UIView!
     let vmBrowser = BrowserViewmodel()
     var begin: CGFloat = CGFloat(0)
-    //var begin: CGFloat?
     var barleftop: CGFloat!
+    
+    var wkdefaulttop: NSLayoutConstraint!
+    var wkfulltop: NSLayoutConstraint!
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        barleftop = navigationController?.navigationBar.frame.origin.y
         self.view.backgroundColor = .white
         
+        topbar = UIView()
+        topbar.backgroundColor = UIColor(red: 233/255, green: 233/255, blue: 231/255, alpha: 1)
+        topbar.translatesAutoresizingMaskIntoConstraints = false //to use constraint
+        self.view.addSubview(topbar)
         
-        wkview = WKWebView(frame: CGRect(x: 0, y: -44, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 44))
-        //wkview = WKWebView()
+        wkview = WKWebView()
         wkview.scrollView.delegate = self
         wkview.allowsBackForwardNavigationGestures = true
+        wkview.translatesAutoresizingMaskIntoConstraints = false //to use constraint
         urlrequest()
-        
-        wkview.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(wkview)
         
-        //wkview.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        topbar.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        topbar.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.12).isActive = true
         
+        wkview.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        topbar.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
+        wkview.widthAnchor.constraint(equalTo: self.view.widthAnchor).isActive = true
+        
+        wkdefaulttop = wkview.topAnchor.constraint(equalTo: topbar.bottomAnchor)
+        wkdefaulttop.isActive = true
+        wkfulltop = wkview.topAnchor.constraint(equalTo: self.view.topAnchor)
+        wkfulltop.isActive = false
+        
+        barleftop = topbar.frame.minY
+        
+        let homeBtn = UIButton(type: .close)
+        homeBtn.backgroundColor = .clear
+        homeBtn.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        homeBtn.addTarget(self, action: #selector(dismissself(_:)), for: .touchUpInside)
+        homeBtn.tintColor = .blue
+        homeBtn.translatesAutoresizingMaskIntoConstraints = false //to use constraint
+        topbar.addSubview(homeBtn)
+        
+        homeBtn.topAnchor.constraint(equalTo: self.topbar.topAnchor, constant: 20).isActive = true
+        homeBtn.heightAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
+        homeBtn.trailingAnchor.constraint(equalTo: self.topbar.trailingAnchor).isActive = true
+        homeBtn.widthAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
+        
+        
+        
+        let addBtn = UIButton(type: .contactAdd)
+        addBtn.backgroundColor = .clear
+        addBtn.titleLabel?.font = UIFont.systemFont(ofSize: 30)
+        addBtn.addTarget(self, action: #selector(dismissself(_:)), for: .touchUpInside)
+        addBtn.tintColor = .blue
+        addBtn.translatesAutoresizingMaskIntoConstraints = false //to use constraint
+        topbar.addSubview(addBtn)
+        
+        addBtn.topAnchor.constraint(equalTo: self.topbar.topAnchor, constant: 20).isActive = true
+        addBtn.heightAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
+        addBtn.leadingAnchor.constraint(equalTo: self.topbar.leadingAnchor).isActive = true
+        addBtn.widthAnchor.constraint(equalTo: self.topbar.heightAnchor, constant: -20).isActive = true
         
     }
 
-
+    @objc func dismissself(_ sender: UIButton) {
+        if let superview = self.presentingViewController {
+            superview.dismiss(animated: true, completion: nil)
+        }
+    }
+    
     
     
     func urlrequest() {
@@ -59,23 +107,26 @@ extension BrowserView: UIScrollViewDelegate {
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let end = scrollView.contentOffset.y
-        
-        guard abs(begin - end) > 120 else { return }
+
+        guard abs(begin - end) > 80 else { return }
         
         if begin < end { //down
+            self.wkdefaulttop.isActive = false
+            self.wkfulltop.isActive = true
             UIView.animate(withDuration: 0.3, animations: {
-                self.navigationController?.navigationBar.frame.origin.y = -(self.navigationController?.navigationBar.frame.height)!
+                self.topbar.frame.origin.y = -self.topbar.frame.height
+                self.view.layoutIfNeeded()
             })
-            self.wkview.frame.origin.y = self.barleftop
-//            self.wkview.frame.size.height = self.wkview.frame.height + self.barleftop
-            
+
         } else { //up
+            self.wkfulltop.isActive = false
+            self.wkdefaulttop.isActive = true
             UIView.animate(withDuration: 0.1, animations: {
-                self.navigationController?.navigationBar.frame.origin.y = self.barleftop
+                self.topbar.frame.origin.y = self.barleftop
+                self.view.layoutIfNeeded()
+                
             })
-//            self.wkview.frame.origin.y = (self.navigationController?.navigationBar.frame.height)!
-//            self.wkview.frame.size.height = self.wkview.frame.height - (self.navigationController?.navigationBar.frame.height)!
-//            print(self.wkview.frame.minY)
         }
+        
     }
 }
