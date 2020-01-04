@@ -26,7 +26,10 @@ final class ViewController: UIViewController {
             let tb = UITableView(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - UIScreen.main.bounds.height*1/10))
             tb.delegate = self
             tb.dataSource = self
-            tb.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+            tb.register(TopListTableCell.self, forCellReuseIdentifier: "cell")
+            //tb.rowHeight = 100
+            //tb.rowHeight = UITableView.automaticDimension
+            //tb.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
             return tb
         }()
         self.view.addSubview(table)
@@ -68,8 +71,14 @@ final class ViewController: UIViewController {
         
         let rightBtn = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editenable(_:)))
         self.navigationItem.rightBarButtonItem = rightBtn
+        let hamicon = HamburgerIcon(frame: CGRect(x: 0, y: 0, width: 30, height: 30))
+        hamicon.viewcolor = .systemBlue
+        hamicon.backgroundColor = .clear
+        let movetohamuburger = UITapGestureRecognizer(target: self, action: #selector(moveham(_:)))
+        hamicon.addGestureRecognizer(movetohamuburger)
+        let leftBtn = UIBarButtonItem(customView: hamicon)
         //let leftBtn = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(tap(_:)))
-        //self.navigationItem.leftBarButtonItem = leftBtn
+        self.navigationItem.leftBarButtonItem = leftBtn
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,6 +87,18 @@ final class ViewController: UIViewController {
         self.configureObserver()
     }
     
+    @objc func moveham(_ sender: UITapGestureRecognizer) {
+        print("this was tap")
+        let configview = ConfigTable()
+        //configview.modalPresentationStyle = .fullScreen
+        //present(configview, animated: false)
+        
+        
+        navigationController?.pushViewController(configview, animated: false)
+        let backButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButtonItem
+        navigationController?.interactivePopGestureRecognizer!.isEnabled = false
+    }
     
     func configureObserver() {
           
@@ -154,7 +175,9 @@ final class ViewController: UIViewController {
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        webappear((tableView.cellForRow(at: indexPath)?.textLabel!.text)!)
+        if let word = (tableView.cellForRow(at: indexPath) as! TopListTableCell).label.text {
+            webappear(word)
+        }
     }
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool
@@ -174,26 +197,47 @@ extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         vmList.move(from: sourceIndexPath.row, to: destinationIndexPath.row)
     }
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView()
+        headerView.backgroundColor = UIColor.clear
+        return headerView
+    }
+    
+    var rand: CGFloat {
+        get {
+            CGFloat(Float.random(in: 230 ..< 255)/255)
+        }
+    }
 }
 
 extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return vmList.count()
+        return 1// vmList.count()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")
-        cell?.textLabel!.text = vmList.pickupword(index: indexPath.row)
-        return cell!
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! TopListTableCell
+        cell.label.text = vmList.pickupword(index: indexPath.section)
+        cell.backgroundColor = UIColor.init(red: rand, green: rand, blue: rand, alpha: 1)
+        return cell
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 10
+    }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return vmList.count()
+    }
 }
 
 extension ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        print("Return")
         textField.resignFirstResponder()
-        
         return true
     }
+    
 }
